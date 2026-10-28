@@ -6,21 +6,24 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![CUDA](https://img.shields.io/badge/CUDA-Accelerated-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Pascal VOC](https://img.shields.io/badge/Dataset-Pascal%20VOC%202007-blue?style=for-the-badge)
 
 <p align="center">
-  <b>Nghiên cứu & Triển khai toàn diện bài toán Object Detection: Từ phương pháp cổ điển (Selective Search), kiến trúc Mạng đề xuất vùng (Region Proposal Network - RPN) đến mô hình 2 giai đoạn Faster R-CNN hoàn chỉnh, kết hợp ứng dụng Web AI tương tác thời gian thực.</b>
+  <b>Hệ thống nghiên cứu và triển khai mô hình Two-Stage Object Detection (Faster R-CNN) từ mức cốt lõi bằng PyTorch, kết hợp Engine suy luận tối ưu hóa FPS và ứng dụng Web tương tác thời gian thực (FastAPI + Next.js).</b>
 </p>
 
 [Tổng quan](#-tổng-quan-dự-án) •
-[Kiến trúc mô hình](#-kiến-trúc-mô-hình-faster-r-cnn) •
-[Tính năng](#-tính-năng-nổi-bật) •
-[Cấu trúc thư mục](#-cấu-trúc-thư-mục-dự-án) •
-[Cài đặt](#-hướng-dẫn-cài-đặt-chi-tiết) •
-[Khởi chạy](#-hướng-dẫn-khởi-chạy-hệ-thống) •
+[Kiến trúc Mô hình](#-kiến-trúc-mô-hình-faster-r-cnn) •
+[Tiền xử lý & Dataset](#-tiền-xử-lý-dữ-liệu--data-augmentation) •
+[Kết quả Huấn luyện](#-kết-quả-huấn-luyện-thực-nghiệm) •
+[Tính năng Web Studio](#-tính-năng-hệ-thống-web-studio) •
+[Cấu trúc Thư mục](#-cấu-trúc-thư-mục-dự-án) •
+[Cài đặt & Khởi chạy](#-cài-đặt--khởi-chạy) •
 [Tài liệu API](#-tài-liệu-api-endpoints) •
-[Huấn luyện & Nghiên cứu](#-huấn-luyện-mô-hình--nghiên-cứu)
+[Sử dụng Python SDK](#-sử-dụng-thư-viện-suy-luận-python)
 
 </div>
 
@@ -28,84 +31,163 @@
 
 ## 📌 Tổng quan Dự án
 
-Dự án **Object_Detection_Part2** tập trung vào nghiên cứu chuyên sâu và xây dựng hệ thống phát hiện đối tượng 2 giai đoạn (Two-Stage Object Detection) từ mức cốt lõi (from scratch) bằng PyTorch, đồng thời đóng gói thành giải pháp Full-stack Production-ready phục vụ suy luận ảnh, video và webcam trực tiếp.
+Dự án **Object_Detection_Part2** là một nền tảng hoàn chỉnh từ nghiên cứu thuật toán đến ứng dụng thực tế về bài toán **Phát hiện đối tượng 2 giai đoạn (Two-Stage Object Detection)**:
 
-### Lộ trình tiến hóa công nghệ trong dự án:
-1. **Classical Proposal (Selective Search)**: Sử dụng các thuật toán phân vùng ảnh dựa trên màu sắc, texture, kích thước để tạo ra hàng nghìn Region Proposals ứng viên (minh họa chi tiết tại notebook [`notebooks/selective_search.ipynb`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/notebooks/selective_search.ipynb)).
-2. **Deep Region Proposal (RPN)**: Thay thế thuật toán Selective Search chậm chạp bằng mạng RPN học trực tiếp trên feature map của Backbone CNN, trượt các Anchor Boxes đa tỉ lệ và dự đoán đồng thời điểm *objectness* và tọa độ *bounding box regression*.
-3. **Faster R-CNN End-to-End**: Kết hợp Backbone trích xuất đặc trưng (**ResNet-18**), mạng RPN, tầng **RoI Align** và các đầu phân loại / tinh chỉnh hộp giới hạn (**Fast R-CNN Head**), tối ưu hóa bằng hàm mất mát đa tác vụ (Multi-task Loss).
-4. **Interactive Full-stack Application**: Cung cấp giao diện web hiện đại (**Next.js 16 + React 19 + Tailwind CSS**) giao tiếp với Backend hiệu năng cao (**FastAPI + WebSockets**) cho phép người dùng điều chỉnh ngưỡng tin cậy (Confidence), lọc trùng lặp (NMS), giới hạn tốc độ xử lý (Target FPS) và phân tích trực quan kết quả suy luận.
+1. **Nghiên cứu Tiền đề (Selective Search)**: Khảo sát trực quan thuật toán đề xuất vùng cổ điển dựa trên phân đoạn ảnh (`notebooks/selective_search.ipynb`) để làm rõ lý do ra đời và ưu thế vượt trội của mạng đề xuất vùng nơ-ron (Region Proposal Network - RPN).
+2. **Hiện thực Faster R-CNN từ Cốt lõi (From Scratch)**: Xây dựng toàn bộ kiến trúc gồm Backbone **ResNet-18** (`resnet18.a1_in1k`), mạng **RPN** với 9 anchors đa tỉ lệ, tầng **RoI Align** chuẩn xác và **Fast R-CNN Detection Head** phân loại 20 lớp đối tượng.
+3. **Data Pipeline nâng cao (Image Pyramid & Dynamic Batching)**: Tự xây dựng `VOCObjectDetectionDataset` hỗ trợ **Image Pyramid Data Augmentation** (phóng to/thu nhỏ đa tỷ lệ) và hàm `collate_fn` padding động kèm GT Box mask.
+4. **Huấn luyện End-to-End với PyTorch AMP**: Tối ưu hóa đồng thời 4 hàm mất mát (Multi-task Loss) với kỹ thuật Mixed Precision (`torch.amp.GradScaler`), lưu checkpoint trọng số tối ưu tại `model_weight.pth`.
+5. **Engine Suy luận Hiệu năng cao (Inference Engine)**: Hỗ trợ dự đoán ảnh tĩnh, video file và live stream camera với cơ chế **Target FPS Throttling**, Batched NMS trên GPU và bảng màu trực quan hóa 20 lớp chuyên nghiệp.
+6. **Ứng dụng Full-stack Hiện đại**:
+   - **Backend**: FastAPI (Python) cung cấp REST API và WebSocket 2 chiều thời gian thực.
+   - **Frontend**: Next.js 16 + React 19 + Tailwind CSS v4 cung cấp 3 Studio trực quan: **Photo Studio**, **Video Pipeline Studio** và **Live Camera Studio**.
 
 ---
 
 ## 🧠 Kiến trúc Mô hình Faster R-CNN
 
-Kiến trúc mô hình được hiện thực chi tiết tại [`model/FasterRCNN.py`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/model/FasterRCNN.py) bao gồm 4 khối thành phần chính:
+Kiến trúc Faster R-CNN được hiện thực chi tiết tại [`model/FasterRCNN.py`](model/FasterRCNN.py) bao gồm 4 khối thành phần chính:
 
-```
-[ Input Image (B, 3, H, W) ]
-            │
-            ▼
-┌───────────────────────────────────────────────┐
-│  1. Backbone: ResNet-18 Feature Extractor     │
-│     (Output: Feature Map C=512, H/32, W/32)   │
-└───────────────────────┬───────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────┐
-│  2. Region Proposal Network (RPN)             │
-│     - 3x3 Conv (512 -> 512)                   │
-│     - 9 Anchors (3 scales x 3 aspect ratios)  │
-│     - Classifier Head: 2 * 9 (Obj vs Bkg)     │
-│     - Regression Head: 4 * 9 (dx, dy, dw, dh) │
-│     - Proposal Filtering & Batched NMS        │
-└───────────────────────┬───────────────────────┘
-                        │ (Top candidate proposals)
-                        ▼
-┌───────────────────────────────────────────────┐
-│  3. RoI Align Layer                           │
-│     - Bilinear Interpolation pooling to 7x7   │
-│     - Output Tensor: (K, 512, 7, 7)           │
-└───────────────────────┬───────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────┐
-│  4. Fast R-CNN Detection Head                 │
-│     - Flatten & FC1 (512*7*7 -> 1024) + ReLU  │
-│     - Cls Head: FC2 -> 21 classes             │
-│     - Reg Head: FC2 -> 21 * 4 bounding boxes  │
-│     - Batched Class NMS & Coordinate Clip     │
-└───────────────────────┬───────────────────────┘
-                        │
-                        ▼
-   [ Final Detections: BBoxes + Labels + Scores ]
+```text
+               ┌───────────────────────────────┐
+               │    Input Image (B, 3, H, W)   │
+               └───────────────┬───────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Feature Extractor Backbone (ResNet-18)                   │
+│    - Pretrained resnet18.a1_in1k (timm)                     │
+│    - Global Pooling & FC layers removed                     │
+│    - Output Feature Map: C = 512, Stride = 32 (H/32, W/32)  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. Region Proposal Network (RPN)                            │
+│    - Anchor Generation: 9 anchors/cell                      │
+│      Scales: [64, 128, 256] px | Ratios: [0.5, 1.0, 2.0]    │
+│    - Classifier Head: Conv2d(512 -> 2 * 9, k=3, p=1)        │
+│    - Regression Head: Conv2d(512 -> 4 * 9, k=3, p=1)        │
+│    - Proposal Generator: Delta Decode -> Boundary Clip      │
+│      -> Top-2000 Pre-NMS -> Batched NMS (IoU=0.7) -> Top-K │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ (Top candidate proposals)
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 3. RoI Align Layer                                          │
+│    - PyTorch torchvision.ops.roi_align                      │
+│    - Spatial Scale = 1/32, Output Size = 7 x 7              │
+│    - Output Tensor: (K, 512, 7, 7)                          │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 4. Fast R-CNN Detection Head                                │
+│    - Flatten & FC1 (512 * 7 * 7 -> 1024) + ReLU             │
+│    - Classifier Head: FC2 (1024 -> 21 classes)              │
+│    - Regressor Head: FC2 (1024 -> 4 coordinates)            │
+│    - Post-processing: Softmax -> Batched NMS theo từng lớp  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+      [ Final Detections: BBoxes + Labels + Confidences ]
 ```
 
-### Các thông số kiến trúc cốt lõi:
-- **Backbone**: `resnet18.a1_in1k` trích xuất feature map cấp cao (stride = 32, channels = 512).
-- **RPN Anchors**: 9 anchor boxes tại mỗi spatial point trên feature map:
-  - **Scales**: `[64, 128, 256]` pixel.
-  - **Aspect Ratios**: `[0.5, 1.0, 2.0]` (1:2, 1:1, 2:1).
-- **RoI Align**: Trích xuất vùng đặc trưng đều đặn với kích thước $7 \times 7$.
-- **Hàm mất mát (Multi-task Loss)**:
-  $$\mathcal{L} = \mathcal{L}_{RPN\_cls} + \lambda_1 \mathcal{L}_{RPN\_reg} + \mathcal{L}_{ROI\_cls} + \lambda_2 \mathcal{L}_{ROI\_reg}$$
-  - Phân loại: *Binary Cross Entropy* (RPN) & *Cross Entropy* (Fast R-CNN).
-  - Hồi quy tọa độ: *Smooth L1 Loss* ($\beta = 1.0$).
-- **Tập dữ liệu**: Huấn luyện trên **Pascal VOC 2007** gồm **20 lớp đối tượng** (và 1 lớp nền Background):
-  > *aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor.*
+### Thông số & Cơ chế toán học
+
+#### 1. Anchor Delta Encoding & Decoding
+Tọa độ bounding box thực $(x, y, w, h)$ được chuẩn hóa tương đối so với anchor box $(x_a, y_a, w_a, h_a)$ theo công thức:
+
+$$
+t_x = \frac{x - x_a}{w_a}, \quad t_y = \frac{y - y_a}{h_a}, \quad t_w = \ln\left(\frac{w}{w_a}\right), \quad t_h = \ln\left(\frac{h}{h_a}\right)
+$$
+
+Và giải mã ngược lại để khôi phục tọa độ hộp thực tế:
+
+$$
+x = x_a + t_x \cdot w_a, \quad y = y_a + t_y \cdot h_a, \quad w = w_a \cdot e^{t_w}, \quad h = h_a \cdot e^{t_h}
+$$
+
+#### 2. Chiến lược Gán nhãn Target (Target Matching)
+- **RPN Target (`build_target`)**:
+  - **Positive (1)**: Anchor có $\text{IoU} \ge 0.7$ với bất kỳ GT box nào, hoặc là anchor có IoU cao nhất với một GT box cụ thể.
+  - **Negative (0)**: Anchor có $\text{IoU} < 0.3$ với tất cả GT boxes.
+  - **Ignore (-1)**: Anchor nằm trong khoảng $0.3 \le \text{IoU} < 0.7$ (không tham gia tính gradient).
+- **RoI Target (`build_roi_targets`)**:
+  - **Positive**: RoI proposal có $\text{IoU} \ge 0.5$ với GT box.
+  - **Negative**: RoI proposal có $0.1 \le \text{IoU} < 0.5$ (gán nhãn background = 0).
+  - Lấy mẫu cân bằng mini-batch (128 RoIs/ảnh với 25% positive, 75% negative).
+
+#### 3. Hàm mất mát Đa tác vụ (Multi-task Loss)
+Mô hình tối ưu hóa đồng thời 4 thành phần loss:
+
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{rpn}}^{\text{cls}} + \mathcal{L}_{\text{rpn}}^{\text{reg}} + \mathcal{L}_{\text{roi}}^{\text{cls}} + \mathcal{L}_{\text{roi}}^{\text{reg}}
+$$
+
+- $\mathcal{L}_{\text{rpn}}^{\text{cls}}$: Cross Entropy Loss phân loại foreground/background cho RPN (`ignore_index=-1`).
+- $\mathcal{L}_{\text{rpn}}^{\text{reg}}$: Smooth L1 Loss hồi quy tọa độ cho positive anchors của RPN.
+- $\mathcal{L}_{\text{roi}}^{\text{cls}}$: Cross Entropy Loss phân loại 21 lớp (20 đối tượng + 1 nền).
+- $\mathcal{L}_{\text{roi}}^{\text{reg}}$: Smooth L1 Loss hồi quy tọa độ hộp bao cho positive RoIs.
+
+#### 4. Danh sách 20 Lớp đối tượng Pascal VOC 2007:
+> `aeroplane`, `bicycle`, `bird`, `boat`, `bottle`, `bus`, `car`, `cat`, `chair`, `cow`, `diningtable`, `dog`, `horse`, `motorbike`, `person`, `pottedplant`, `sheep`, `sofa`, `train`, `tvmonitor`.
 
 ---
 
-## ✨ Tính năng Nổi bật
+## 📦 Tiền xử lý Dữ liệu & Data Augmentation
 
-| Tính năng | Mô tả chi tiết |
+Hiện thực tại [`src/orgainize_data.py`](src/orgainize_data.py):
+
+- **Image Pyramid Augmentation (`VOCObjectDetectionDataset`)**:
+  - Hỗ trợ biến đổi đa kích thước: upscale (`up` - phóng to tối đa 2.5x để phát hiện vật thể nhỏ), downscale (`down` - thu nhỏ), hoặc kết hợp (`both`) với tỷ lệ mở rộng $1.5\times$.
+  - Tự động co giãn tỷ lệ tọa độ hộp bao (Ground Truth BBoxes) tương ứng với kích thước ảnh mới và cắt viền (coordinate clamping).
+- **Dynamic Batch Padding (`collate_fn`)**:
+  - Tự động xác định $(H_{\max}, W_{\max})$ trong batch và đệm (padding) ảnh về cùng kích thước mà không làm méo tỉ lệ khung hình.
+  - Đệm danh sách GT BBoxes và GT Labels theo số lượng hộp lớn nhất trong batch kèm mặt nạ logic `mask_GT_boxes`.
+
+---
+
+## 📊 Kết quả Huấn luyện Thực nghiệm
+
+Quá trình huấn luyện End-to-End được thực hiện với lớp `TrainModel` (`model/FasterRCNN.py`) trên tập **Pascal VOC 2007 trainval** thông qua sổ tay [`notebooks/TrainFasterRCNN.ipynb`](notebooks/TrainFasterRCNN.ipynb):
+
+### Cấu hình Huấn luyện
+- **Phần cứng**: NVIDIA GPU hỗ trợ CUDA (8 GB VRAM).
+- **Optimizer**: Adam với Differential Learning Rate:
+  - Backbone ResNet-18: $\text{lr} = 0.0001$, weight decay = $0.0005$.
+  - RPN & Fast R-CNN Heads: $\text{lr} = 0.001$, weight decay = $0.0005$.
+- **Kỹ thuật tăng tốc**: PyTorch Automatic Mixed Precision (`torch.autocast` + `GradScaler`).
+- **Batch size**: 16 | **Số epoch**: 10 | **Thời gian huấn luyện**: ~2 giờ 10 phút.
+
+### Nhật ký (LOG) Giảm Loss & Độ chính xác qua 10 Epochs:
+
+| Epoch | Total Loss | RPN Cls Loss | RPN Reg Loss | RPN Accuracy | Fast R-CNN Cls Loss | Fast R-CNN Reg Loss | Fast R-CNN Accuracy |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1** | 0.8143 | 0.0149 | 0.2175 | 99.81% | 0.4151 | 0.1667 | 88.94% |
+| **2** | 0.5053 | 0.0078 | 0.1343 | 99.88% | 0.3151 | 0.0482 | 89.70% |
+| **3** | 0.4482 | 0.0070 | 0.1092 | 99.88% | 0.2865 | 0.0454 | 90.35% |
+| **4** | 0.4138 | 0.0066 | 0.0963 | 99.88% | 0.2673 | 0.0435 | 90.82% |
+| **5** | 0.3876 | 0.0063 | 0.0863 | 99.88% | 0.2530 | 0.0419 | 91.16% |
+| **6** | 0.3637 | 0.0062 | 0.0783 | 99.88% | 0.2387 | 0.0406 | 91.56% |
+| **7** | 0.3415 | 0.0060 | 0.0713 | 99.88% | 0.2247 | 0.0395 | 91.99% |
+| **8** | 0.3244 | 0.0059 | 0.0663 | 99.88% | 0.2137 | 0.0386 | 92.27% |
+| **9** | 0.3089 | 0.0058 | 0.0622 | 99.88% | 0.2034 | 0.0375 | 92.56% |
+| **10** | **0.2939** | **0.0057** | **0.0580** | **99.88%** | **0.1935** | **0.0367** | **92.84%** |
+
+Trọng số tối ưu đã được lưu trữ sẵn tại: [`model_weight.pth`](model_weight.pth) (~251 MB).
+
+---
+
+## 💻 Tính năng Hệ thống Web Studio
+
+Ứng dụng web được xây dựng với giao diện Dark Mode hiện đại, hiệu ứng kính mờ (Glassmorphism) và 3 Studio chuyên biệt:
+
+| Studio | Mô tả & Chức năng chi tiết |
 | :--- | :--- |
-| 🖼️ **Image Studio** | Tải lên ảnh tùy ý hoặc chọn ảnh mẫu từ bộ dữ liệu Pascal VOC. Tự do tùy biến thanh trượt **Confidence Threshold** ($0.01 - 1.0$) và **NMS IoU Threshold** ($0.01 - 1.0$). Hiển thị bounding box với màu sắc riêng biệt cho từng lớp, bảng thống kê số lượng và độ trễ (latency ms). |
-| 🎬 **Video Studio** | Phân tích video định dạng MP4/WebM với tùy chọn **Target Processing FPS** (5, 10, 15, 24, 30 FPS). Tự động nén và mã hóa sang chuẩn video WebM thân thiện với trình duyệt, cung cấp video player phát lại mượt mà kèm bảng phân bố đối tượng theo thời gian. |
-| 📹 **Live Webcam Studio** | Truyền tải frame hình thời gian thực qua kênh **WebSocket 2 chiều (`/api/ws/webcam`)**. Cho phép điều chỉnh Target FPS nhằm kiểm soát băng thông mạng và tải GPU/CPU, đo lường chính xác FPS thực tế và thời gian suy luận từng frame. |
-| 🧠 **Model Architecture Inspector** | Trực quan hóa cấu trúc từng tầng của Faster R-CNN ngay trên giao diện Web, giúp người dùng nắm bắt luồng truyền dữ liệu từ ảnh đầu vào, RPN, RoI Align đến đầu ra dự đoán. |
-| ⚡ **Tối ưu hóa Suy luận** | Tích hợp **PyTorch AMP (Automatic Mixed Precision)**, cơ chế **Model Warmup** khi khởi động server, **Batched NMS** trên GPU giúp giảm thiểu tối đa độ trễ suy luận. |
-| 🛠️ **1-Click Launch Scripts** | Cung cấp sẵn các file bash scripts (`start_all.sh`, `run_backend.sh`, `run_frontend.sh`) hỗ trợ khởi chạy đồng thời hoặc độc lập giữa Backend và Frontend, tự động giải phóng port bị chiếm dụng. |
+| 🖼️ **Photo Studio** | • Tải ảnh lên (kéo thả hoặc chọn file) hoặc chọn nhanh **6 ảnh mẫu benchmark Pascal VOC**.<br>• Điều chỉnh thanh trượt **Confidence Threshold** ($0.01 - 1.0$) và **NMS IoU Threshold** ($0.01 - 1.0$).<br>• **Target Inspector**: Click trực tiếp vào bất kỳ bounding box nào trên ảnh để xem tên lớp, độ tin cậy %, tọa độ $[x_1, y_1, x_2, y_2]$ và kích thước $W \times H$.<br>• **Class Filter Pills**: Lọc và tô sáng riêng biệt từng lớp đối tượng kèm số lượng phát hiện.<br>• Chế độ chuyển đổi nhanh: Ảnh gốc vs Ảnh đã gắn nhãn (Split/Toggle). |
+| 🎬 **Video Pipeline Studio** | • Tải lên video MP4/WebM hoặc chọn **Sample Video** mẫu (`sample_demo.mp4`).<br>• Tùy chỉnh **Target FPS** (1 đến 30 FPS) giúp kiểm soát lưu lượng xử lý.<br>• Trình phát video tích hợp chuyển đổi mượt mà giữa video gốc và video annotated (mã hóa chuẩn WebM VP80 tương thích trình duyệt).<br>• Bảng thống kê hiệu năng chi tiết: Source FPS, Effective Target FPS, số khung hình đã xử lý, tổng thời gian, processing FPS trung bình, biểu đồ phân bố lớp đối tượng và nút tải video kết quả. |
+| 📹 **Live Camera Studio** | • Nhận diện trực tiếp qua Webcam/Camera ngoài với kênh **WebSocket 2 chiều (`/api/ws/webcam`)**.<br>• Tùy chọn thiết bị camera (đa webcam), lật gương (Mirror mode) và điều chỉnh Target FPS.<br>• HUD hiển thị thời gian thực: FPS thực tế (Actual FPS) và độ trễ suy luận (Latency ms).<br>• **Snapshot Capture**: Chụp nhanh khung hình hiện tại kèm bounding boxes và tự động chuyển sang Photo Studio để phân tích chuyên sâu. |
 
 ---
 
@@ -113,279 +195,186 @@ Kiến trúc mô hình được hiện thực chi tiết tại [`model/FasterRCN
 
 ```text
 Object_Detection_Part2/
-├── backend/                        # Mã nguồn Backend FastAPI
-│   └── main.py                     # Khởi tạo API REST & WebSocket stream
-├── backend_storage/                # Thư mục lưu trữ tạm thời cho file tải lên & video đã xử lý
-│   ├── uploads/
-│   └── processed/
-├── data/                           # Thư mục chứa dữ liệu benchmark & mẫu thử nghiệm
-│   ├── sample_demo.mp4             # Video mẫu thử nghiệm
-│   └── VOCdevkit/                  # Thư mục dataset Pascal VOC 2007
-├── frontend/                       # Ứng dụng Next.js 16 Web UI
-│   ├── src/
-│   │   ├── app/                    # Next.js App Router (page.js, layout.js, ...)
-│   │   └── components/             # Các component giao diện (ImageStudio, VideoStudio, CameraStudio, ...)
-│   ├── package.json                # Quản lý dependencies frontend (React 19, Lucide, Tailwind)
-│   └── next.config.mjs             # Cấu hình Next.js
-├── model/                          # Cấu trúc mạng nơ-ron học sâu
-│   └── FasterRCNN.py               # Hiện thực Feature_Extractor, RPN, RoI Align, Fast R-CNN Head & Loss
-├── notebooks/                      # Jupyter Notebooks nghiên cứu & huấn luyện
-│   ├── selective_search.ipynb      # Thử nghiệm trích xuất Region Proposal cổ điển với Selective Search
-│   └── TrainFasterRCNN.ipynb       # Pipeline huấn luyện Faster R-CNN với PyTorch & AMP
-├── src/                            # Thư viện tiện ích xử lý dữ liệu & suy luận
-│   ├── download_data.py            # Tự động tải bộ dữ liệu Pascal VOC qua torchvision
-│   ├── inference.py                # Engine suy luận FasterRCNNInferencer (ảnh, video, webcam)
-│   └── orgainize_data.py           # Custom PyTorch Dataset & Transforms cho Pascal VOC
-├── model_weight.pth                # Trọng số mô hình đã huấn luyện (~251 MB)
-├── requirements.txt                # Danh sách thư viện Python cần cài đặt
-├── run_backend.sh                  # Script khởi chạy riêng FastAPI Backend (:8000)
-├── run_frontend.sh                 # Script khởi chạy riêng Next.js Frontend (:3000)
-├── start_all.sh                    # Script khởi chạy đồng thời Backend & Frontend
-└── README.md                       # Tài liệu hướng dẫn sử dụng và đặc tả dự án
+├── backend/                       # Backend FastAPI
+│   └── main.py                    # RESTful endpoints & WebSocket webcam streaming
+├── backend_storage/               # Thư mục lưu trữ tạm thời cho backend
+│   ├── processed/                 # Video WebM đã annotate phục vụ stream/tải về
+│   └── uploads/                   # Video đầu vào được tải lên
+├── data/                          # Dữ liệu phục vụ nghiên cứu & demo
+│   ├── VOCdevkit/                 # Bộ dữ liệu Pascal VOC 2007 (Annotations, JPEGImages)
+│   ├── sample_demo.mp4            # Video mẫu đầu vào
+│   └── sample_demo_annotated.mp4  # Video mẫu sau khi được mô hình nhận diện
+├── frontend/                      # Web Studio (Next.js 16 + React 19 + Tailwind CSS v4)
+│   ├── src/app/
+│   │   ├── globals.css            # Design system, glassmorphism & responsive styles
+│   │   ├── layout.js              # Root layout & Metadata
+│   │   └── page.js                # Điều hướng các Studio (Photo, Video, Camera)
+│   ├── src/components/
+│   │   ├── CameraStudio.js        # Giao diện Webcam thời gian thực qua WebSocket
+│   │   ├── Navbar.js              # Thanh điều hướng & badge trạng thái phần cứng CUDA
+│   │   ├── PhotoStudio.js         # Giao diện nhận diện ảnh tĩnh & Target Inspector
+│   │   └── VideoStudio.js         # Giao diện xử lý video theo Target FPS
+│   ├── src/utils/
+│   │   └── api.js                 # Cấu hình API Base URL & WebSocket URL
+│   └── package.json               # Dependencies Frontend
+├── model/                         # Định nghĩa kiến trúc Faster R-CNN cốt lõi
+│   └── FasterRCNN.py              # Feature_Extractor, FasterRCNN_model & TrainModel
+├── notebooks/                     # Sổ tay Jupyter nghiên cứu
+│   ├── selective_search.ipynb     # Khảo sát thuật toán đề xuất vùng Selective Search cổ điển
+│   └── TrainFasterRCNN.ipynb      # Pipeline huấn luyện Faster R-CNN với PyTorch AMP
+├── src/                           # Các module tiện ích
+│   ├── download_data.py           # Script tự động tải bộ dữ liệu Pascal VOC 2007
+│   ├── inference.py               # Engine FasterRCNNInferencer & hàm model_inference
+│   └── orgainize_data.py          # VOCObjectDetectionDataset & collate_fn đệm động
+├── model_weight.pth               # Checkpoint trọng số đã huấn luyện (~251 MB)
+├── requirements.txt               # Thư viện Python phụ thuộc
+├── run_backend.sh                 # Script khởi chạy riêng FastAPI Backend (:8000)
+├── run_frontend.sh                # Script khởi chạy riêng Next.js Frontend (:3000)
+├── start_all.sh                   # Script khởi chạy 1-Click đồng thời Backend & Frontend
+└── README.md                      # Tài liệu dự án
 ```
 
 ---
 
-## 💻 Yêu cầu Hệ thống (Prerequisites)
+## ⚙️ Cài đặt & Khởi chạy
 
-Trước khi tiến hành cài đặt, hãy đảm bảo hệ thống của bạn đáp ứng các tiêu chuẩn sau:
+### 1. Yêu cầu Tiên quyết
+- **Hệ điều hành**: Linux (Ubuntu 20.04/22.04), macOS, hoặc Windows (WSL2).
+- **Python**: `>= 3.10`
+- **Node.js**: `>= 18.0.0` & `npm`
+- **GPU (Khuyến nghị)**: NVIDIA GPU có CUDA để đạt hiệu năng xử lý video/webcam tối ưu (hệ thống tự động fallback về CPU nếu không có GPU).
 
-- **Hệ điều hành**: Linux (Ubuntu 20.04/22.04/24.04 được khuyến nghị), macOS hoặc Windows (thông qua WSL2).
-- **Python**: Phiên bản `3.10` trở lên (khuyên dùng Python 3.10 hoặc 3.11).
-- **Node.js**: Phiên bản `v18.0.0` hoặc `v20.0.0+` kèm theo `npm`.
-- **Card đồ họa (GPU)**: Khuyến nghị card NVIDIA có hỗ trợ CUDA (Compute Capability 7.0+, ví dụ: GTX 1660, RTX 2060, RTX 3060 trở lên) để đạt tốc độ xử lý video/webcam mượt mà (chế độ CPU vẫn hoạt động tự động nếu không có CUDA).
-- **FFmpeg & Codecs**: Cần thiết cho việc giải mã/ghi video bằng OpenCV (`apt install ffmpeg libsm6 libxext6`).
-
----
-
-## 🛠️ Hướng dẫn Cài đặt Chi tiết
-
-### Bước 1: Clone kho lưu trữ
+### 2. Cài đặt Môi trường
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/ChienDoanDuy204/Object_Detection_Part2.git
 cd Object_Detection_Part2
-```
 
----
+# 2. Cài đặt Python dependencies
+pip install -r requirements.txt
 
-### Bước 2: Khởi tạo Môi trường Python
-
-Bạn có thể sử dụng **Conda / Miniconda** (khuyến nghị) hoặc **Python venv**:
-
-#### Lựa chọn A: Sử dụng Conda (Khuyên dùng)
-```bash
-# Tạo môi trường ảo với Python 3.10
-conda create -n faster_rcnn_env python=3.10 -y
-
-# Kích hoạt môi trường
-conda activate faster_rcnn_env
-```
-
-#### Lựa chọn B: Sử dụng Python venv chuẩn
-```bash
-# Tạo virtual environment
-python3 -m venv .venv
-
-# Kích hoạt môi trường
-source .venv/bin/activate      # Trên Linux/macOS
-# Hoặc trên Windows: .venv\Scripts\activate
-```
-
----
-
-### Bước 3: Cài đặt các gói thư viện Python (`requirements.txt`)
-
-1. **(Quan trọng) Cài đặt PyTorch với hỗ trợ CUDA tương thích**:
-   Nếu máy của bạn có GPU NVIDIA, hãy truy cập [PyTorch Get Started](https://pytorch.org/get-started/locally/) để cài đặt bản PyTorch phù hợp với phiên bản CUDA của máy.
-   *Ví dụ cho CUDA 12.4 / 12.6:*
-   ```bash
-   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
-   ```
-   *Nếu chỉ dùng CPU:*
-   ```bash
-   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-   ```
-
-2. **Cài đặt toàn bộ các thư viện phụ thuộc qua `requirements.txt`**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-> [!NOTE]
-> File [`requirements.txt`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/requirements.txt) đã được phân loại rõ ràng gồm:
-> - **Deep Learning**: `torch`, `torchvision`, `timm` (cung cấp ResNet backbone pretrained)
-> - **Computer Vision**: `opencv-python`, `pillow`, `numpy`
-> - **Web API Backend**: `fastapi`, `uvicorn[standard]`, `python-multipart`, `websockets`, `pydantic`
-> - **Training & Tracking**: `tqdm`, `matplotlib`, `requests`, `huggingface_hub`
-
-3. **Kiểm tra cài đặt**:
-   ```bash
-   python -c "import torch, torchvision, timm, cv2, fastapi; print('PyTorch CUDA:', torch.cuda.is_available(), '| Thiết bị:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
-   ```
-
----
-
-### Bước 4: Cài đặt Dependencies cho Frontend
-
-Di chuyển vào thư mục `frontend` và cài đặt các package Node.js:
-
-```bash
+# 3. Cài đặt Frontend dependencies
 cd frontend
 npm install
 cd ..
 ```
+> File trọng số [`model_weight.pth`](model_weight.pth) (~251 MB) đã được huấn luyện sẵn và lưu ở trên huggingface. Nếu cần tải lại tập dữ liệu Pascal VOC 2007:
+> ```bash
+> python -m src.download_data
+> ```
 
+> Tải trọng số của model tại: https://huggingface.co/doanduychien204/Faster_RCNN
+>```bash
+> wget -O model_weight.pth https://huggingface.co/doanduychien204/Faster_RCNN/blob/main/model_weight.pth
+>```
 ---
 
-### Bước 5: Kiểm tra Trọng số Mô hình (`model_weight.pth`)
+### 3. Khởi chạy Ứng dụng
 
-Đảm bảo file trọng số mô hình đã được đặt ngay tại thư mục gốc:
-```bash
-ls -lh model_weight.pth
-```
-File trọng số có dung lượng khoảng **251 MB**. Khi khởi động, Backend sẽ tự động load file này vào GPU/CPU.
-
----
-
-### Bước 6: Tải dữ liệu mẫu Pascal VOC 2007 (Tùy chọn)
-
-Nếu muốn phục vụ thư viện ảnh mẫu cho Image Studio hoặc phục vụ huấn luyện lại mô hình:
-```bash
-python -m src.download_data
-```
-Script sẽ tự động tải bộ dữ liệu Pascal VOC 2007 (`trainval` và ảnh JPEG) vào thư mục `data/VOCdevkit/`.
-
----
-
-## 🚀 Hướng dẫn Khởi chạy Hệ thống
-
-### Cách 1: Khởi chạy 1-Click tự động (Khuyến nghị) 🌟
-
-Chúng tôi đã thiết lập sẵn script [`start_all.sh`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/start_all.sh) giúp khởi chạy cả Backend và Frontend cùng lúc chỉ bằng một lệnh duy nhất:
+#### Cách 1: Khởi chạy 1-Click tự động (Khuyên dùng) 🌟
 
 ```bash
-# Cấp quyền thực thi nếu cần
 chmod +x start_all.sh run_backend.sh run_frontend.sh
-
-# Khởi chạy hệ thống
 ./start_all.sh
 ```
 
-**Đặc điểm nổi bật của script:**
-- Tự động kiểm tra và giải phóng cổng `8000` và `3000` nếu bị tiến trình khác chiếm dụng.
-- Khởi động song song Backend và Frontend.
-- Bắt tín hiệu ngắt (`Ctrl + C`) để dọn dẹp sạch sẽ toàn bộ các tiến trình nền khi bạn dừng hệ thống.
+Script sẽ tự động kiểm tra và giải phóng các port `8000` và `3000`, sau đó khởi chạy song song Backend và Frontend. Nhấn `Ctrl + C` để dừng đồng thời cả 2 dịch vụ an toàn.
 
----
+- **Frontend Studio**: [http://localhost:3000](http://localhost:3000)
+- **Backend API Docs (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Cách 2: Khởi chạy Thủ công Từng Phần
+#### Cách 2: Khởi chạy Thủ công Từng Dịch vụ
 
-Nếu bạn muốn debug hoặc theo dõi log riêng của từng thành phần:
-
-#### 1. Khởi chạy Backend:
 ```bash
+# Terminal 1 - Backend FastAPI (:8000):
 ./run_backend.sh
-# Hoặc khởi chạy thủ công bằng python:
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
-```
-- API sẽ khả dụng tại: `http://localhost:8000`
-- Swagger UI tài liệu API: `http://localhost:8000/docs`
+# Hoặc: python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
-#### 2. Khởi chạy Frontend:
-Mở một terminal mới:
-```bash
+# Terminal 2 - Frontend Next.js (:3000):
 ./run_frontend.sh
-# Hoặc khởi chạy thủ công bằng npm:
-cd frontend
-npm run dev -- -p 3000
+# Hoặc: cd frontend && npm run dev -- -p 3000
 ```
-- Mở trình duyệt và truy cập: **`http://localhost:3000`**
 
 ---
 
 ## 📡 Tài liệu API Endpoints
 
-FastAPI Backend cung cấp đầy đủ các chuẩn RESTful và WebSocket phục vụ đa dạng nhu cầu:
+Backend FastAPI hỗ trợ đầy đủ các chuẩn giao tiếp RESTful và WebSocket:
 
 ### REST API
 
-| Method | Endpoint | Mô tả | Tham số / Body |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/info` | Trả về thông tin mô hình, phần cứng (CUDA/CPU), danh sách 20 classes và bảng mã màu | Không |
-| `GET` | `/api/samples` | Lấy danh sách ảnh mẫu benchmark từ bộ dữ liệu Pascal VOC | Không |
-| `GET` | `/api/sample/{filename}` | Lấy dữ liệu file ảnh mẫu | `filename: string` |
-| `GET` | `/api/video/sample` | Lấy video demo mẫu phục vụ test nhanh Video Studio | Không |
-| `POST` | `/api/predict/image` | Dự đoán vật thể trên ảnh tĩnh tải lên | `file: UploadFile`<br>`conf_threshold: float (0.01 - 1.0)`<br>`nms_threshold: float (0.01 - 1.0)` |
-| `POST` | `/api/predict/video` | Xử lý nhận diện trên file video theo tốc độ target FPS | `file: UploadFile`<br>`target_fps: float (1 - 30)`<br>`conf_threshold: float`<br>`nms_threshold: float` |
-| `GET` | `/api/video/{filename}` | Stream hoặc tải video WebM đã vẽ bounding box | `filename: string` |
+| Phương thức | Đường dẫn | Chức năng | Tham số / Request Body | Response chính |
+| :---: | :--- | :--- | :--- | :--- |
+| `GET` | `/api/info` | Thông tin mô hình, thiết bị (CUDA/CPU), danh sách classes & mã màu HEX | Không | `{ status, model_name, num_classes, classes, colors, device, cuda_available }` |
+| `GET` | `/api/samples` | Danh sách 6 ảnh mẫu benchmark Pascal VOC | Không | `{ samples: [{ id, title, category }, ...] }` |
+| `GET` | `/api/sample/{filename}` | Lấy file ảnh mẫu benchmark từ tập dữ liệu | `filename: string` | File JPEG trực tiếp |
+| `GET` | `/api/video/sample` | Lấy video demo mẫu | Không | File MP4 trực tiếp |
+| `POST` | `/api/predict/image` | Nhận diện đối tượng trên ảnh tải lên | Multipart Form:<br>• `file`: File ảnh (JPG/PNG)<br>• `conf_threshold`: float (mặc định 0.35)<br>• `nms_threshold`: float (mặc định 0.35) | `{ filename, width, height, inference_time_ms, total_detections, counts, detections, annotated_image }` |
+| `POST` | `/api/predict/video` | Xử lý video theo Target FPS | Multipart Form:<br>• `file`: File video (MP4/WebM)<br>• `target_fps`: float (1.0 - 30.0)<br>• `conf_threshold`: float<br>• `nms_threshold`: float | `{ video_id, source_fps, target_fps, total_source_frames, processed_frames, total_elapsed_s, avg_processing_fps, video_url, class_summary, frame_stats }` |
+| `GET` | `/api/video/{filename}` | Stream hoặc tải video WebM đã gắn nhãn | `filename: string` | Stream `video/webm` |
 
 ### WebSocket API
 
-| Protocol | Endpoint | Mô tả | Payload gửi lên / nhận về |
-| :--- | :--- | :--- | :--- |
-| `WS` | `/api/ws/webcam` | Kênh stream webcam tương tác 2 chiều thời gian thực | **Client gửi**: JSON `{ image: "<base64>", target_fps: 15, conf_threshold: 0.35, nms_threshold: 0.35, return_annotated: true }`<br>**Server trả**: JSON `{ detections: [...], inference_time_ms: 18.5, actual_fps: 14.8, annotated_image: "<base64>" }` |
+| Giao thức | Đường dẫn | Chức năng | Chi tiết Payload |
+| :---: | :--- | :--- | :--- |
+| `WS` | `/api/ws/webcam` | Kênh stream webcam tương tác hai chiều thời gian thực | **Client gửi**: JSON `{ image: "<base64>", target_fps: 15, conf_threshold: 0.35, nms_threshold: 0.35, return_annotated: true }`<br>**Server trả**: JSON `{ detections: [...], inference_time_ms: 18.5, target_fps: 15, actual_fps: 14.8, width: 640, height: 480, annotated_image: "<base64>" }` |
 
 ---
 
-## 🔬 Huấn luyện Mô hình & Nghiên cứu
+## 🐍 Sử dụng Thư viện Suy luận Python
 
-Dự án cung cấp hai sổ tay Jupyter phục vụ mục đích nghiên cứu và tái huấn luyện:
+Bạn có thể tích hợp trực tiếp module suy luận [`src/inference.py`](src/inference.py) vào các dự án Python độc lập thông qua hàm `model_inference`:
 
-### 1. Phân tích Region Proposals với Selective Search
-- File: [`notebooks/selective_search.ipynb`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/notebooks/selective_search.ipynb)
-- Mục đích: Minh họa trực quan thuật toán Selective Search cổ điển dựa trên OpenCV (`cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()`). Phân tích nhược điểm về thời gian tính toán (~2-5 giây/ảnh) là động lực để phát minh ra Region Proposal Network (RPN).
+```python
+from src.inference import model_inference
 
-### 2. Huấn luyện Faster R-CNN từ đầu với PyTorch
-- File: [`notebooks/TrainFasterRCNN.ipynb`](file:///home/chiendoan/Code_Module6/Object_Detection_Part2/notebooks/TrainFasterRCNN.ipynb)
-- Nội dung:
-  - Tải và tiền xử lý dữ liệu với XML Parser cho nhãn VOC Bounding Boxes.
-  - Xây dựng tầng Anchor Generator sinh 9 anchors trên mỗi vị trí spatial.
-  - Tính toán IoU giữa ground-truth và anchors để gán nhãn dương tính (positive $\ge 0.7$), âm tính (negative $< 0.3$) và bỏ qua (ignore).
-  - Huấn luyện kết hợp RPN và Fast R-CNN Head bằng kỹ thuật Mixed Precision (`torch.amp.GradScaler`).
-  - Đánh giá mAP (mean Average Precision) và lưu lại trọng số `model_weight.pth`.
+# 1. Dự đoán trên ảnh tĩnh
+image_result = model_inference(
+    mode="picture",
+    source="data/VOCdevkit/VOC2007/JPEGImages/000200.jpg",
+    conf_threshold=0.4,
+    nms_threshold=0.35,
+    weights_path="model_weight.pth"
+)
+print("Số lượng đối tượng:", len(image_result["detections"]))
+print("Độ trễ suy luận:", image_result["inference_time_ms"], "ms")
 
----
+# 2. Xử lý video file với Target FPS
+video_result = model_inference(
+    mode="video",
+    source="data/sample_demo.mp4",
+    fps=15.0,  # Xử lý ở tốc độ 15 khung hình/giây
+    output_path="backend_storage/processed/demo_result.mp4",
+    conf_threshold=0.35,
+    weights_path="model_weight.pth"
+)
+print(f"Đã xử lý {video_result['processed_frames']} frames với tốc độ trung bình {video_result['avg_processing_fps']} FPS")
 
-## ❓ Xử lý Sự cố Thường gặp (Troubleshooting)
-
-<details>
-<summary><b>1. Trình duyệt báo lỗi "Requested device not found" ở tab Webcam Studio?</b></summary>
-
-- **Nguyên nhân**: Máy tính của bạn chưa kết nối webcam vật lý, hoặc trình duyệt chưa được cấp quyền truy cập camera cho tên miền `http://localhost:3000`.
-- **Cách xử lý**:
-  1. Kiểm tra lại thiết bị webcam bằng lệnh `v4l2-ctl --list-devices` hoặc `ls /dev/video*`.
-  2. Bấm vào biểu tượng ổ khóa/quyền trang web trên thanh địa chỉ trình duyệt và chuyển trạng thái Camera sang **Allow**.
-  3. Nếu thử nghiệm trên máy chủ từ xa (Remote Server/SSH), tính năng webcam client sẽ sử dụng camera của máy khách (client laptop/PC) đang mở trình duyệt.
-</details>
-
-<details>
-<summary><b>2. Cổng 8000 hoặc 3000 báo lỗi "Address already in use"?</b></summary>
-
-- **Cách xử lý**: Chạy lệnh giải phóng cổng tức thì:
-  ```bash
-  fuser -k 8000/tcp 2>/dev/null || true
-  fuser -k 3000/tcp 2>/dev/null || true
-  ```
-  Script `./start_all.sh` đã được tích hợp sẵn cơ chế này tự động.
-</details>
-
-<details>
-<summary><b>3. Thông báo "OpenCV: FFMPEG: tag 0x30385056/'VP80' is not supported"?</b></summary>
-
-- **Giải thích**: Đây là thông báo log của bộ nạp codec OpenCV FFMPEG khi khởi tạo `VideoWriter` mã hóa định dạng WebM VP80. Tiến trình vẫn fallback và ghi video bình thường. Video sau khi xử lý có thể phát trực tiếp trên trình duyệt Chrome/Firefox/Edge mà không gặp trở ngại.
-</details>
-
-<details>
-<summary><b>4. Thông báo cảnh báo "Warning: You are sending unauthenticated requests to the HF Hub"?</b></summary>
-
-- **Giải thích**: Thư viện `timm` tự động tải trọng số pretrained backbone `resnet18.a1_in1k` từ Hugging Face Hub ở lần chạy đầu tiên. Đây chỉ là thông báo khuyến nghị và không ảnh hưởng đến hoạt động của mô hình.
-</details>
+# 3. Stream webcam trực tiếp
+for annotated_frame, pred, fps in model_inference(mode="webcam", source=0, fps=15.0):
+    # annotated_frame: Ảnh OpenCV BGR có sẵn bounding boxes và watermark
+    # pred: Dictionary chứa danh sách detections và latency
+    # fps: FPS đo lường thực tế
+    print(f"Live FPS: {fps:.1f} | Detections: {len(pred['detections'])}")
+    break
+```
 
 ---
 
-## 📜 Giấy phép & Tác giả
+## 🔬 Sổ tay thử nghiệm (Jupyter Notebooks)
+
+1. **Selective Search Exploration**:
+   - File: [`notebooks/selective_search.ipynb`](notebooks/selective_search.ipynb)
+   - Trực quan hóa thuật toán Selective Search cổ điển dựa trên phân đoạn ảnh bằng OpenCV (`cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()`) trên ảnh thử nghiệm, phân tích lý do thuật toán tiêu tốn từ 2 đến 5 giây cho mỗi ảnh và động lực phát triển RPN.
+2. **Train Faster R-CNN From Scratch**:
+   - File: [`notebooks/TrainFasterRCNN.ipynb`](notebooks/TrainFasterRCNN.ipynb)
+   - Pipeline hoàn chỉnh: Phân tích cấu trúc thư mục VOC, tạo từ điển ánh xạ 20 nhãn, khởi tạo `VOCObjectDetectionDataset` với chuẩn hóa ImageNet và Image Pyramid, nạp dữ liệu bằng DataLoader kết hợp `collate_fn`, thiết lập mô hình `FasterRCNN_model` và thực thi vòng lặp huấn luyện `TrainModel` trong 10 epochs với Mixed Precision.
+
+---
+
+## 📜 Tác giả & Giấy phép
 
 - **Tác giả**: Chien Doan ([@ChienDoanDuy204](https://github.com/ChienDoanDuy204))
-- **Mục đích**: Nghiên cứu, học tập và triển khai mô hình học sâu Thị giác máy tính (Computer Vision / Object Detection).
-- Dự án hoan nghênh mọi đóng góp, phản hồi và mở rộng! ⭐ Hãy cho dự án 1 sao nếu bạn thấy hữu ích!
+- **Mục tiêu**: Nghiên cứu, học tập chuyên sâu và triển khai bài toán Computer Vision / Object Detection thực tế.
+- Đóng góp và phản hồi luôn được hoan nghênh! ⭐ Hãy cho dự án 1 sao trên GitHub nếu bạn thấy hữu ích!
